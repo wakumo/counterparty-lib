@@ -188,8 +188,10 @@ def construct_coin_selection(encoding, data_array, source, allow_unconfirmed_inp
 
     # pop inputs until we can pay for the fee
     for coin in use_inputs:
-        logger.debug('New input: {}'.format(print_coin(coin)))
+        logger.info('New input: {}'.format(print_coin(coin)))
         inputs.append(coin)
+        logger.info('input amount before: {}'.format(coin['amount']))
+        logger.info('input amount: {}'.format(round(coin['amount'] * config.UNIT)))
         btc_in += round(coin['amount'] * config.UNIT)
 
         # If exact fee is specified, use that. Otherwise, calculate size of tx
