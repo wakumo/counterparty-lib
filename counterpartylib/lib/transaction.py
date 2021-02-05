@@ -151,6 +151,8 @@ def construct_coin_selection(encoding, data_array, source, allow_unconfirmed_inp
         else:
             unspent = backend.get_unspent_txouts(source, unconfirmed=allow_unconfirmed_inputs)
 
+        logger.info('get_unspent_txouts: {}'.format([print_coin(coin) for coin in unspent]))
+
         filter_unspents_utxo_locks = []
         if UTXO_LOCKS is not None and source in UTXO_LOCKS:
             filter_unspents_utxo_locks = UTXO_LOCKS[source].keys()
@@ -163,8 +165,9 @@ def construct_coin_selection(encoding, data_array, source, allow_unconfirmed_inp
                 filtered_unspent.append(output)
         unspent = filtered_unspent
 
+        logger.info('Unsort UTXOs: {}'.format([print_coin(coin) for coin in unspent]))
         unspent = backend.sort_unspent_txouts(unspent)
-        logger.debug('Sorted candidate UTXOs: {}'.format([print_coin(coin) for coin in unspent]))
+        logger.info('Sorted candidate UTXOs: {}'.format([print_coin(coin) for coin in unspent]))
         use_inputs = unspent
 
     # use backend estimated fee_per_kb
