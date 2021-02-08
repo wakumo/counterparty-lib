@@ -27,7 +27,6 @@ D = decimal.Decimal
 from fractions import Fraction
 import json
 import logging
-from decimal import *
 logger = logging.getLogger(__name__)
 
 from bitcoin.core import VarIntSerializer
@@ -119,7 +118,7 @@ def validate (db, source, timestamp, value, fee_fraction_int, text, block_index)
 def compose (db, source, timestamp, value, fee_fraction, text):
 
     # Store the fee fraction as an integer.
-    fee_fraction_int = int(Decimal(str(fee_fraction)) * 1e8)
+    fee_fraction_int = int(D(str(fee_fraction)) * 1e8)
 
     problems = validate(db, source, timestamp, value, fee_fraction_int, text, util.CURRENT_BLOCK_INDEX)
     if problems: raise exceptions.ComposeError(problems)
