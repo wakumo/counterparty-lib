@@ -14,6 +14,7 @@ import binascii
 import hashlib
 import signal
 import bitcoin.wallet
+from decimal import *
 
 from counterpartylib.lib import config, util, address
 
@@ -388,12 +389,11 @@ def unpack_vout(outpoint, tx, block_count):
 
     logger.info("unpack_vout: {}".format(vout))
     logger.info("vout['value']: {}".format(vout["value"]))
-    logger.info("value".format(int(vout["value"] * config.UNIT)))
     return {
         "txId": tx["txid"],
         "vout": outpoint[1],
         "height": height,
-        "value": int(vout["value"] * config.UNIT),
+        "value": int(Decimal(str(vout["value"])) * config.UNIT),
         "confirmations": tx["confirmations"]
     }
 
