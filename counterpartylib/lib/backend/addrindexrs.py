@@ -387,6 +387,8 @@ def unpack_vout(outpoint, tx, block_count):
     else:
         tx["confirmations"] = 0
 
+    logger.info("unpack_vout: {}".format(vout))
+    logger.info("vout['value']: {}".format(vout["value"]))
     return {
         "txId": tx["txid"],
         "vout": outpoint[1],

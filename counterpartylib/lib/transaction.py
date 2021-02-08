@@ -135,6 +135,11 @@ def construct_coin_selection(encoding, data_array, source, allow_unconfirmed_inp
                              fee_per_kb, estimate_fee_per_kb, estimate_fee_per_kb_nblocks, exact_fee, size_for_fee, fee_provided, destination_btc_out, data_btc_out,
                              regular_dust_size, disable_utxo_locks):
 
+    logger.info('Start `construct_coin_selection`:')
+    logger.info('exact_fee {}'.format(exact_fee))
+    logger.info('fee_provided {}'.format(fee_provided))
+    logger.info('regular_dust_size {}'.format(regular_dust_size))
+
     global UTXO_LOCKS, UTXO_P2SH_ENCODING_LOCKS
 
     # Array of UTXOs, as retrieved by listunspent function from bitcoind
@@ -183,8 +188,10 @@ def construct_coin_selection(encoding, data_array, source, allow_unconfirmed_inp
 
     # pop inputs until we can pay for the fee
     for coin in use_inputs:
-        logger.debug('New input: {}'.format(print_coin(coin)))
+        logger.info('New input: {}'.format(print_coin(coin)))
         inputs.append(coin)
+        logger.info('input amount before: {}'.format(coin['amount']))
+        logger.info('input amount: {}'.format(round(coin['amount'] * config.UNIT)))
         btc_in += round(coin['amount'] * config.UNIT)
 
         # If exact fee is specified, use that. Otherwise, calculate size of tx
@@ -200,6 +207,10 @@ def construct_coin_selection(encoding, data_array, source, allow_unconfirmed_inp
         # Check if good.
         btc_out = destination_btc_out + data_btc_out
         change_quantity = btc_in - (btc_out + final_fee)
+        logger.info('btc_in {}'.format(btc_in))
+        logger.info('btc_out {}'.format(btc_out))
+        logger.info('final_fee {}'.format(final_fee))
+        logger.info('change_quantity {}'.format(change_quantity))
         logger.debug('Size: {} Fee: {:.8f} Change quantity: {:.8f} BTC'.format(size, final_fee / config.UNIT, change_quantity / config.UNIT))
         # If change is necessary, must not be a dust output.
         if change_quantity == 0 or change_quantity >= regular_dust_size:
