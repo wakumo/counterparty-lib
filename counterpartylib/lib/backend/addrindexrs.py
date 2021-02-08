@@ -14,6 +14,7 @@ import binascii
 import hashlib
 import signal
 import bitcoin.wallet
+import decimal
 D = decimal.Decimal
 
 from counterpartylib.lib import config, util, address
