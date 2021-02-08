@@ -13,6 +13,7 @@ import pprint
 import struct
 import logging
 from math import floor
+
 logger = logging.getLogger(__name__)
 
 from counterpartylib.lib import config
