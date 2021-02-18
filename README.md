@@ -182,3 +182,6 @@ A `counterparty-client` configuration file looks like this:
 # Further Reading
 
 * [Official Project Documentation](http://counterparty.io/docs/)
+
+---
+* auto build image
