@@ -185,6 +185,7 @@ def sendrawtransaction(tx_hex):
 
 GETRAWTRANSACTION_MAX_RETRIES=2
 def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _retry=0):
+    logger.info("Start getrawtransaction_batch: {}".format(txhash_list))
     _logger = logger.getChild("getrawtransaction_batch")
 
     if len(txhash_list) > config.BACKEND_RAW_TRANSACTIONS_CACHE_SIZE:
@@ -203,6 +204,7 @@ def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _ret
 
     # payload for transactions not in cache
     for tx_hash in txhash_list:
+        logger.info("raw_transactions_cache: {}".format(raw_transactions_cache))
         if tx_hash not in raw_transactions_cache:
             call_id = binascii.hexlify(os.urandom(5)).decode('utf8')
             payload.append({
@@ -211,6 +213,7 @@ def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _ret
                 "jsonrpc": "2.0",
                 "id": call_id
             })
+            logger.info("noncached_txhashes: {}".format(raw_transactions_cache))
             noncached_txhashes.add(tx_hash)
             tx_hash_call_id[call_id] = tx_hash
     #refresh any/all cache entries that already exist in the cache,
@@ -218,6 +221,7 @@ def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _ret
     #(this assumes that the size of the working set for any given workload doesn't exceed the max size of the cache)
     for tx_hash in txhash_list.difference(noncached_txhashes):
         raw_transactions_cache.refresh(tx_hash)
+        logger.info("raw_transactions_cache.refresh: {}".format(raw_transactions_cache))
 
     _logger.debug("getrawtransaction_batch: txhash_list size: {} / raw_transactions_cache size: {} / # getrawtransaction calls: {}".format(
         len(txhash_list), len(raw_transactions_cache), len(payload)))
@@ -225,11 +229,15 @@ def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _ret
     # populate cache
     if len(payload) > 0:
         batch_responses = rpc_batch(payload)
+        logger.info("payload: {}".format(payload))
+        logger.info("batch_responses: {}".format(batch_responses))
         for response in batch_responses:
             if 'error' not in response or response['error'] is None:
                 tx_hex = response['result']
+                logger.info("tx_hex: {}".format(tx_hex))
                 tx_hash = tx_hash_call_id[response['id']]
                 raw_transactions_cache[tx_hash] = tx_hex
+                logger.info("raw_transactions_cache[tx_hash]: {}".format(raw_transactions_cache))
             elif skip_missing and 'error' in response and response['error']['code'] == -5:
                 raw_transactions_cache[tx_hash] = None
                 logging.debug('Missing TX with no raw info skipped (txhash: {}): {}'.format(
@@ -403,12 +411,15 @@ def unpack_vout(outpoint, tx, block_count):
 
 def get_unspent_txouts(source):
     ensure_addrindexrs_connected()
+    logger.info('ensure_addrindexrs_connected!')
 
     block_count = getblockcount()
     result = _backend.send({
         "method": "blockchain.scripthash.get_utxos",
         "params": [_address_to_hash(source)]
     })
+
+    logger.info('blockchain.scripthash.get_utxos: {}'.format(result))
 
     if not(result is None) and "result" in result:
         result = result["result"]

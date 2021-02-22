@@ -182,8 +182,8 @@ def get_unspent_txouts(source, unconfirmed=False, unspent_tx_hash=None):
     """
 
     unspent = BACKEND().get_unspent_txouts(source)
-    logger.info('get_unspent_txouts: {}'.format(unspent))
-    logger.info('config.UNIT: {}'.format(config.UNIT))
+    # logger.info('get_unspent_txouts: {}'.format(unspent))
+    # logger.info('config.UNIT: {}'.format(config.UNIT))
 
     # filter by unspent_tx_hash
     if unspent_tx_hash is not None:
@@ -195,9 +195,9 @@ def get_unspent_txouts(source, unconfirmed=False, unspent_tx_hash=None):
 
     # format
     for utxo in unspent:
-        logger.info('utxo: {}'.format(utxo))
+        # logger.info('utxo: {}'.format(utxo))
         utxo['amount'] = float(utxo['value'] / config.UNIT)
-        logger.info("utxo['amount']: {}".format(utxo['amount']))
+        # logger.info("utxo['amount']: {}".format(utxo['amount']))
         utxo['txid'] = utxo['txId']
         del utxo['txId']
         # do not add scriptPubKey
