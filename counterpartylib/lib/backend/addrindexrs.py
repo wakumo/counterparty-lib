@@ -184,7 +184,6 @@ def sendrawtransaction(tx_hex):
     return rpc('sendrawtransaction', [tx_hex])
 
 GETRAWTRANSACTION_MAX_RETRIES=2
-monotonic_call_id = 0
 def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _retry=0):
     _logger = logger.getChild("getrawtransaction_batch")
 
@@ -205,10 +204,7 @@ def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _ret
     # payload for transactions not in cache
     for tx_hash in txhash_list:
         if tx_hash not in raw_transactions_cache:
-            #call_id = binascii.hexlify(os.urandom(5)).decode('utf8') # Don't drain urandom
-            global monotonic_call_id
-            monotonic_call_id = monotonic_call_id + 1
-            call_id = "{}".format(monotonic_call_id)
+            call_id = binascii.hexlify(os.urandom(5)).decode('utf8')
             payload.append({
                 "method": 'getrawtransaction',
                 "params": [tx_hash, 1],
