@@ -202,24 +202,14 @@ def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _ret
 
     # payload for transactions not in cache
     for tx_hash in txhash_list:
-        if tx_hash not in raw_transactions_cache:
-            #call_id = binascii.hexlify(os.urandom(5)).decode('utf8') # Don't drain urandom
-            global monotonic_call_id
-            monotonic_call_id = monotonic_call_id + 1
-            call_id = "{}".format(monotonic_call_id)
-            payload.append({
-                "method": 'getrawtransaction',
-                "params": [tx_hash, 1],
-                "jsonrpc": "2.0",
-                "id": call_id
-            })
-            noncached_txhashes.add(tx_hash)
-            tx_hash_call_id[call_id] = tx_hash
-    #refresh any/all cache entries that already exist in the cache,
-    # so they're not inadvertently removed by another thread before we can consult them
-    #(this assumes that the size of the working set for any given workload doesn't exceed the max size of the cache)
-    for tx_hash in txhash_list.difference(noncached_txhashes):
-        raw_transactions_cache.refresh(tx_hash)
+        call_id = binascii.hexlify(os.urandom(5)).decode('utf8') # Don't drain urandom
+        payload.append({
+            "method": 'getrawtransaction',
+            "params": [tx_hash, 1],
+            "jsonrpc": "2.0",
+            "id": call_id
+        })
+        tx_hash_call_id[call_id] = tx_hash
 
     _logger.debug("getrawtransaction_batch: txhash_list size: {} / raw_transactions_cache size: {} / # getrawtransaction calls: {}".format(
         len(txhash_list), len(raw_transactions_cache), len(payload)))
