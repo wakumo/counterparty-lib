@@ -205,7 +205,7 @@ def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _ret
 
     # payload for transactions not in cache
     for tx_hash in txhash_list:
-        logger.info("raw_transactions_cache: {}".format(pprint(dict(raw_transactions_cache.items()))))
+        logger.info("raw_transactions_cache: {}".format(pprint(raw_transactions_cache, indent=4)))
         if tx_hash not in raw_transactions_cache:
             call_id = binascii.hexlify(os.urandom(5)).decode('utf8')
             payload.append({
@@ -214,7 +214,7 @@ def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _ret
                 "jsonrpc": "2.0",
                 "id": call_id
             })
-            logger.info("noncached_txhashes: {}".format(pprint(dict(raw_transactions_cache.items()))))
+            logger.info("noncached_txhashes: {}".format(pprint(raw_transactions_cache, indent=4)))
             noncached_txhashes.add(tx_hash)
             tx_hash_call_id[call_id] = tx_hash
     #refresh any/all cache entries that already exist in the cache,
