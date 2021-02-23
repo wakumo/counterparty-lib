@@ -15,6 +15,7 @@ import hashlib
 import signal
 import bitcoin.wallet
 import decimal
+import pprint
 D = decimal.Decimal
 
 from counterpartylib.lib import config, util, address
@@ -204,7 +205,7 @@ def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _ret
 
     # payload for transactions not in cache
     for tx_hash in txhash_list:
-        logger.info("raw_transactions_cache: {}".format(raw_transactions_cache))
+        logger.info("raw_transactions_cache: {}".format(pprint(dict(raw_transactions_cache.items()))))
         if tx_hash not in raw_transactions_cache:
             call_id = binascii.hexlify(os.urandom(5)).decode('utf8')
             payload.append({
@@ -213,7 +214,7 @@ def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _ret
                 "jsonrpc": "2.0",
                 "id": call_id
             })
-            logger.info("noncached_txhashes: {}".format(raw_transactions_cache))
+            logger.info("noncached_txhashes: {}".format(pprint(dict(raw_transactions_cache.items()))))
             noncached_txhashes.add(tx_hash)
             tx_hash_call_id[call_id] = tx_hash
     #refresh any/all cache entries that already exist in the cache,
