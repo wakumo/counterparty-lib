@@ -186,7 +186,6 @@ def sendrawtransaction(tx_hex):
 
 GETRAWTRANSACTION_MAX_RETRIES=2
 def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _retry=0):
-    logger.info("Start getrawtransaction_batch: {}".format(txhash_list))
     _logger = logger.getChild("getrawtransaction_batch")
 
     if len(txhash_list) > config.BACKEND_RAW_TRANSACTIONS_CACHE_SIZE:
@@ -226,8 +225,6 @@ def getrawtransaction_batch(txhash_list, verbose=False, skip_missing=False, _ret
     # populate cache
     if len(payload) > 0:
         batch_responses = rpc_batch(payload)
-        logger.info("payload: {}".format(payload))
-        logger.info("batch_responses: {}".format(batch_responses))
         for response in batch_responses:
             if 'error' not in response or response['error'] is None:
                 tx_hex = response['result']
